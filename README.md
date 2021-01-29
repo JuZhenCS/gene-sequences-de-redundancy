@@ -1,15 +1,36 @@
-# cd-hit-est-by-OneAPI  
-移植了cd-hit套件中的cd-hit-est应用到OnePAI平台  
+# gene sequence de-redundancy  
+English verson:  
+Gene sequence de-redundancy is a precise gene sequence de-redundancy software that supports heterogeneous acceleration.  
+The existing de-redundancy software cd-hit is a CPU based software,
+In order to make the running speed acceptable, increase the speed by reducing the accuracy.
+Compared with accurate clustering, the speed can be up to 100 times faster, but the generated results contain redundancy.  
+Gene sequence de-redundancy supports heterogeneous acceleration,
+The generated result does not contain any redundancy, and the speed is the same as cd-hit.  
+Compile the code:  
+make  
+Run the code:  
+./cluster [options]  
+Parameter Description:  
+t: similarity threshold, the default is 0.95  
+i: input file, default is testData.fasta  
+o: output result file, default is result.fasta  
+DevCloud platform running code:  
+qsub submit.sh  
 
+中文版：  
+gene sequence de-redundancy是支持异构加速的精确基因序列去冗余软件。  
+现有的去冗余软件cd-hit是CPU软件，
+为了使得运行速度可接受，通过降低精度，来提高速度。
+与精确聚类相比，速度最高可提升百倍，但生成的结果中包含冗余。  
+gene sequence de-redundancy支持异构加速，
+生成的结果中不包含任何冗余，而速度与cd-hit相同。  
 编译代码：  
-dpcpp cd-hit-set.cpp
+make  
+运行代码:  
+./cluster [选项]  
+参数说明：  
+t: 相似度阈值，默认为 0.95  
+i: 输入文件，默认为 testData.fasta  
+o: 输出结果文件，默认为 result.fasta  
 devCloud平台运行代码：  
-./q run.sh  
-
-由于程序处于初期阶段，还有些粗糙的地方，说明如下：  
-移植自cpu程序cd-hit套件的cd-hit-est工具，功能是基因序列聚类。  
-默认聚类阈值为0.9，word长度为8，可以在源码define处修改。  
-性能比原cpu版差很多，后期会优化。  
-测试文件testData.fasta需要与编译生成的可执行文件a.out在同一目录。  
-测试文件大概需要跑五分钟，只会输出聚类的条数，实际聚类结果存在main函数的clusters数组中，没有输出。  
-测试文件的文件名是写在源码中的。  
+qsub submit.sh  

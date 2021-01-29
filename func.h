@@ -46,7 +46,7 @@ public:
         if (device.is_gpu()) {  // gpu first
             device_rating = 4;
         } else if (device.get_info<cl::sycl::info::device::name>()
-            == "Intel(R) Gen9 HD Graphics NEO") {  // gen 9 secode
+            == "Intel(R) Gen9 HD Graphics NEO") {  // Gen9 secode
             device_rating = 3;
         } else if (device.is_cpu()) {  // cpu last
             device_rating = 0;

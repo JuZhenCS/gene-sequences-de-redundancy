@@ -81,6 +81,8 @@ void readFile(std::vector<Read> &reads, Option &option) {
 void copyData(std::vector<Read> &reads, Data &data) {
     Selector selector;
     sycl::queue queue(selector);
+    std::cout << "Device:" <<
+    queue.get_device().get_info<sycl::info::device::name>() << std::endl;
     int readsCount = reads.size();
     data.readsCount = readsCount;
     data.lengths = sycl::malloc_shared<int>(readsCount, queue);

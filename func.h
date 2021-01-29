@@ -44,7 +44,10 @@ public:
     int operator()(const sycl::device &device) const override {
         int device_rating;
         if (device.is_gpu()) {  // gpu first
-            device_rating = 2;
+            device_rating = 4;
+        } else if (device.get_info<cl::sycl::info::device::name>()
+            == "Intel(R) Gen9 HD Graphics NEO") {  // gen 9 secode
+            device_rating = 3;
         } else if (device.is_cpu()) {  // cpu last
             device_rating = 0;
         } else {  // xpus

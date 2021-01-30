@@ -11,7 +11,7 @@ make
 Run the code:  
 ./cluster [options]  
 Parameter Description:  
-t: similarity threshold, the default is 0.95  
+t: similarity threshold, the default is 0.95, range is 0.8 to 1.0.  
 i: input file, default is testData.fasta  
 o: output result file, default is result.fasta  
 DevCloud platform running code:  
@@ -29,7 +29,7 @@ make
 运行代码:  
 ./cluster [选项]  
 参数说明：  
-t: 相似度阈值，默认为 0.95  
+t: 相似度阈值，默认为 0.95，支持0.8到1.0  
 i: 输入文件，默认为 testData.fasta  
 o: 输出结果文件，默认为 result.fasta  
 devCloud平台运行代码：  

@@ -6,9 +6,9 @@ In order to make the running speed acceptable, increase the speed by reducing th
 Compared with accurate clustering, the speed can be up to 100 times faster, but the generated results contain redundancy.  
 Gene sequence de-redundancy supports heterogeneous acceleration,
 The generated result does not contain any redundancy, and the speed is the same as cd-hit.  
-Compile the code:  
+Compile:  
 make  
-Run the code:  
+Run:  
 ./cluster [options]  
 Parameter Description:  
 t: similarity threshold, the default is 0.95, range is 0.8 to 1.0.  

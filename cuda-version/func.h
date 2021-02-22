@@ -1,4 +1,5 @@
 // 基因序列去冗余应用
+#pragma once
 #include <iostream>  // cout
 #include <fstream>  // ifstream
 #include <ctime>  // clock

@@ -1,4 +1,3 @@
-// 基因序列去冗余应用
 #pragma once
 #include <iostream>  // cout
 #include <fstream>  // ifstream
@@ -6,51 +5,80 @@
 #include <vector>  // vector
 #include <cstring>  // memcpy
 #include <algorithm>  // sort
-//--------------------数据--------------------//
-struct Option {  // 配置选项
-    std::string inputFile;  // 输入文件名
-    std::string outputFile;  // 输出文件名
-    float threshold;  // 阈值
-    int wordLength;  // 词长度
+//--------------------Data--------------------//
+struct Option {  // option
+    std::string inputFile;  // input file
+    std::string outputFile;  // output file
+    float threshold;  // threshold
+    int wordLength;  // word length
+    int drop;  // with or without filter
+    int pigeon;  // with or without pigeon
 };
-struct Read {
-    std::string data;
+struct Read {  // gene reads
     std::string name;
+    std::string data;
 };
-struct Data {
-    // 读入的数据
-    int readsCount;  // 读长的数量
-    int *lengths;  // 存储读长的长度
-    long *offsets;  // 存储读长的开端
-    char *reads;  // 存储读长
-    // 生成的数据
-    unsigned int *compressed;  // 压缩后的reads
-    int *gaps;  // gap的数量
-    unsigned short *indexs;  // 存储生成的index
-    unsigned short *orders;  // 存储index的序号
-    long *words;  // 存储序列的word数
-    int *magicBase;  // 神奇碱基数
-    // 阈值
-    int *wordCutoff;  // word的阈值
-    int *baseCutoff;  // 比对的阈值
+struct Data {  // data in memory
+    // data form file
+    int readsCount;  // amount of reads
+    int *lengths;  // length of reads
+    long *offsets;  // offset of reads
+    char *reads;  // reads
+    // generated data
+    unsigned int *compressed;  // compressed reads
+    int *gaps;  // amoutn of gap
+    int *prefix;  // prefilter
+    unsigned int *words;  // word
+    int *wordCounts;  // amount of words
+    unsigned short *orders;  // order of words
+    // threshold
+    int *wordCutoff;  // threshold of word
+    int *baseCutoff;  // threshold of align
+    int *pigeonCutoff;  // threshold of pigeon
+    // pigeon
+    unsigned short *pigeonIndex;  // pigeon code
+    unsigned short *pigeon;  // pigeon position
 };
-struct Bench {  // workbench 工作台
-    int *cluster;  // 存储聚类的结果
-    unsigned short *table;  // 存储table
-    int representative;  // 当前代表序列
+struct Bench {  // work bench
+    unsigned short *table;  // table
+    int *cluster;  // result of clustering
+    int *remainList;  // unclustering
+    int remainCount;  // amount of unclustering
+    int *jobList;  // job list
+    int jobCount;  // job count
+    int representative;  // representative
 };
-//--------------------函数--------------------//
+//--------------------Function--------------------//
+// checkOption check input
 void checkOption(int argc, char **argv, Option &option);
+// readFile read file
 void readFile(std::vector<Read> &reads, Option &option);
+// copyData copy data
 void copyData(std::vector<Read> &reads, Data &data);
+// baseToNumber convert base to number
 void baseToNumber(Data &data);
+// createPigeon generate pigeon
+void createPigeon(Data &data);
+// compressData compress data
 void compressData(Data &data);
-void createIndex(Data &data, Option &option);
+// createCutoff generate threshold
 void createCutoff(Data &data, Option &option);
-void sortIndex(Data &data);
-void mergeIndex(Data &data);
-void updateRepresentative(int *cluster, int &representative, int readsCount);
+// createPrefix generate prefilter
+void createPrefix(Data &data);
+// createWords generate words
+void createWords(Data &data, Option &option);
+// sortWords sort words
+void sortWords(Data &data, Option &option);
+// mergeWords merge words
+void mergeWords(Data &data);
+// clustering clustering
 void clustering(Option &option, Data &data, Bench &bench);
+// clusteringDrop clustering without filter
+void clusteringDrop(Option &option, Data &data, Bench &bench);
+
+// saveFile save result
 void saveFile(Option &option, std::vector<Read> &reads, Bench &bench);
-void checkValue(Data &data);
+// checkValue check the result
+void checkValue(Option &option, Data &data, Bench &bench);
+// check GPU error
 void checkError();

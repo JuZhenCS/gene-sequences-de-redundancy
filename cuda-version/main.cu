@@ -1,26 +1,36 @@
 #include "func.h"
-//--------------------主体--------------------//
+//--------------------main--------------------//
 int main(int argc, char **argv) {
-    clock_t start;
+    clock_t start = clock();
+    //----Data Preparation----//
     Option option;
-    checkOption(argc, argv, option);  // 检查配置 ok
+    checkOption(argc, argv, option);  // check option ok
     std::vector<Read> reads;
-    readFile(reads, option);  // 读文件 ok
+    readFile(reads, option);  // read file ok
     Data data;
-    copyData(reads, data);  // 拷贝数据 ok
-    baseToNumber(data);  // 碱基转数字 ok
-    compressData(data);  // 压缩数据
-    createIndex(data, option);  // 生成index ok
-    createCutoff(data, option);  // 生成阈值 ok
-    sortIndex(data);  // 排序index ok
-    mergeIndex(data);  // 合并index ok
-
-start=clock();
+    copyData(reads, data);  // copy data ok
+    //----pretreatment----//
+    baseToNumber(data);  // base to number ok
+    if (option.drop == 0 && option.pigeon == 1) {
+        createPigeon(data);  // create pigeon ok
+    }
+    compressData(data);  // compress data ok
+    createCutoff(data, option);  // create threshold ok
+    if (option.drop == 0) {  // no dorp filter
+        createPrefix(data);  // create prefilter ok
+        createWords(data, option);  // create word ok
+        sortWords(data, option);  // sort word ok
+        mergeWords(data);  // merge word ok
+    }
+    //----remove redundancy----//
     Bench bench;
-    clustering(option, data, bench);  // 聚类
-std::cout << "聚类耗时：" << (clock()-start)/1000 << "ms" << std::endl;
-
-    saveFile(option, reads, bench);
-    checkValue(data);
+    if (option.drop == 0) {  // no dorp filter
+        clustering(option, data, bench);  // with filer ok
+    } else {
+        clusteringDrop(option, data, bench);  // without filter ok
+    }
+    //----end----//
+    saveFile(option, reads, bench);  // save result ok
     checkError();
+    std::cout << "time consuming:\t" << (clock()-start)/1000 << "ms" << std::endl;
 }

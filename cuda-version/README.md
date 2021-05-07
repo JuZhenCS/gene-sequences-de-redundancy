@@ -1,7 +1,7 @@
 # gene sequence de-redundancy  
 This is cuda verson.  
 Compile:  
-nvcc main.cu func.cu -o cluster DMAX_LENGTH=3000  
+nvcc main.cu func.cu -o cluster -DMAX_LENGTH=3000  
 MAX_LENGTH: length of the longest sequence in data set  
 Run:  
 ./cluster [options]  

@@ -1,19 +1,22 @@
 #include "func.h"
-//--------------------main--------------------//
 int main(int argc, char **argv) {
+    clock_t start = clock();
     Option option;
-    checkOption(argc, argv, option);  // check configuration ok
+    checkOption(argc, argv, option); 
     std::vector<Read> reads;
-    readFile(reads, option);  // read file ok
+    readFile(reads, option); 
     Data data;
-    copyData(reads, data);  // copy data ok
-    baseToNumber(data);  // base to number ok
-    compressData(data);  // compress data ok
-    createIndex(data, option);  // create index ok
-    createCutoff(data, option);  // create threshold ok
-    sortIndex(data);  // sort index ok
-    mergeIndex(data);  // merge index ok
+    copyData(reads, data, option); 
+    baseToNumber(data); 
+    createPrefix(data); 
+    createWords(data, option); 
+    sortWords(data, option); 
+    mergeWords(data); 
+    createCutoff(data, option); 
+    deleteGap(data); 
+    compressData(data); 
     Bench bench;
-    clustering(option, data, bench);  // clustering ok
-    saveFile(option, reads, bench);  // save result ok
+    clustering(option, data, bench); 
+    saveFile(option, reads, bench); 
+    std::cout << "time consuming:" << (clock()-start)/1000 << "ms" << std::endl;
 }

@@ -1,64 +1,84 @@
+// 模仿cdhit写的聚类应用，有聚类步骤
+//亲测 #pragma once 不可靠
 #ifndef FUNCH
 #define FUNCH
 
-#include <iostream> 
-#include <fstream> 
-#include <ctime> 
-#include <vector> 
-#include <cstring> 
-#include <algorithm> 
+#include <iostream>  // cout
+#include <fstream>  // ifstream
+#include <ctime>  // clock
+#include <vector>  // vector
+#include <cstring>  // memcpy
+#include <algorithm>  // sort
 #include <CL/sycl.hpp>
-
-struct Option { 
-    std::string inputFile; 
-    std::string outputFile; 
-    float threshold; 
-    int wordLength; 
-    int filter; 
-    int pigeon; 
-    int gpu; 
+// #include <dpct/dpct.hpp>
+//--------------------数据--------------------//
+struct Option {  // 配置选项
+    std::string inputFile;  // 输入文件名
+    std::string outputFile;  // 输出文件名
+    float threshold;  // 阈值
+    int wordLength;  // 词长度
 };
-struct Read { 
+struct Read {  // 读长
     std::string name;
     std::string data;
 };
-struct Data { 
-   
-    int readsCount; 
-    int *lengths; 
-    long *offsets; 
-    char *reads; 
-   
-    int *prefix; 
-    unsigned short *words; 
-    int *wordCounts; 
-    unsigned short *orders; 
-    int *gaps; 
-    unsigned int *compressed; 
-   
-    int *wordCutoff; 
-    int *baseCutoff; 
+struct Data {  // 显存和内存中的数据
+    // // 原始数据
+    int readsCount;  // 读长的数量
+    long readsLength;  // 读长的总长度
+    int *lengths_dev;  // 存储读长的长度
+    long *offsets_dev;  // 存储读长的开端
+    char *reads_dev;  // 存储读长
+    // 生成的数据
+    int *prefix_dev;  // 前置过滤数据
+    unsigned short *words_dev;  // 存储生成的短词
+    int *wordCounts_dev;  // 短词的个数
+    unsigned short *orders_dev;  // 存储短词的个数
+    int *gaps_dev;  // 序列中的gap数量
+    unsigned int *compressed_dev;  // 压缩后的数据
+    // 阈值
+    int *wordCutoff_dev;  // word的阈值
+    int *baseCutoff_dev;  // 比对的阈值
 };
-struct Bench { 
-    unsigned short *table; 
-    int *cluster; 
-    int *remainList; 
-    int remainCount; 
-    int *jobList; 
-    int jobCount; 
-    int representative; 
+struct Bench {  // 工作台
+    unsigned short *table_dev;  // 存储table
+    int *cluster;  // 存储聚类的结果
+    int *remainList;  // 未聚类列表
+    int remainCount;  // 未聚类数
+    int *jobList;  // 任务列表
+    int jobCount;  // 任务数
+    int representative;  // 代表序列
+    int *result;  // 最终结果
 };
+//--------------------普通函数--------------------//
+// checkOption 检查输入
 void checkOption(int argc, char **argv, Option &option);
+// selectDevice 选择设备
+void selectDevice(Option &option);
+// readFile 读文件
 void readFile(std::vector<Read> &reads, Option &option);
+// copyData 拷贝数据
 void copyData(std::vector<Read> &reads, Data &data, Option &option);
+// baseToNumber 碱基转换为数字
 void baseToNumber(Data &data);
+// createPrefix 生成前置过滤
 void createPrefix(Data &data);
+// createWords 生成短词
 void createWords(Data &data, Option &option);
+// sortWords 排序短词 (gpu希尔比std::sort快3倍)
 void sortWords(Data &data, Option &option);
+// mergeWords 合并相同短词
 void mergeWords(Data &data);
+// createCutoff 生成阈值
 void createCutoff(Data &data, Option &option);
+// deleteGap 去除gap
 void deleteGap(Data &data);
+// compressData 压缩数据
 void compressData(Data &data);
+//--------------------聚类过程--------------------//
+// 聚类
 void clustering(Option &option, Data &data, Bench &bench);
+//--------------------收尾函数--------------------//
+// saveFile 保存结果
 void saveFile(Option &option, std::vector<Read> &reads, Bench &bench);
 #endif
